@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from app import models
 from app.schemas import DocumentCreate, DocumentResponse, DocumentUpdate
 
@@ -47,6 +47,9 @@ async def delete_document(document_id: int, db: AsyncSession) -> bool:
     if not document:
         return False
 
+    await db.execute(
+        delete(models.Message).where(models.Message.document_id == document_id)
+    )
     await db.delete(document)
     await db.commit()
     return True
